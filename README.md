@@ -38,8 +38,7 @@ The aim of this thesis is to implement the ADR (Active Domain Randomization) int
 - 🔜 Upload trained models to the GitHub repository
 - 🔜 Wait for server availability to scale experiments (GPU cluster access pending)
 - 🔜 Design ADR pipeline and test parameters' impact
-- 🔜 Refine Unity environment once new version becomes available
-- 🔜 Created first baseline RL training setup
+- 🔜 Create first baseline RL training setup
 - 🔜 Identified logging structure for training sessions (data collected for comparison)
   
 
