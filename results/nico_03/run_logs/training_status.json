@@ -1,0 +1,38 @@
+{
+    "NICO": {
+        "checkpoints": [
+            {
+                "steps": 499000,
+                "file_path": "results\\nico_03\\NICO\\NICO-499000.onnx",
+                "reward": -7124.349365234375,
+                "creation_time": 1744306696.1511412,
+                "auxillary_file_paths": [
+                    "results\\nico_03\\NICO\\NICO-499000.pt"
+                ]
+            },
+            {
+                "steps": 504000,
+                "file_path": "results\\nico_03\\NICO\\NICO-504000.onnx",
+                "reward": null,
+                "creation_time": 1744320925.8663397,
+                "auxillary_file_paths": [
+                    "results\\nico_03\\NICO\\NICO-504000.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 504000,
+            "file_path": "results\\nico_03\\NICO.onnx",
+            "reward": null,
+            "creation_time": 1744320925.8663397,
+            "auxillary_file_paths": [
+                "results\\nico_03\\NICO\\NICO-504000.pt"
+            ]
+        }
+    },
+    "metadata": {
+        "stats_format_version": "0.3.0",
+        "mlagents_version": "1.1.0",
+        "torch_version": "2.2.2+cu121"
+    }
+}
