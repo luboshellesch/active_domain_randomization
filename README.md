@@ -3,7 +3,7 @@
 This repository contains the source code, Unity project, and experimental setup for my Master's thesis:  
 **"Active Domain Randomization for Training the Virtual Twin of NICO in Unity"**.
 
-The project was developed using Unity version 2022.3.4f1, and the robot was trained with ML-Agents version 2.0.1.
+The project was developed using Unity version 2022.3.4f1, and the robot was trained with ML-Agents version 2.0.2.
 
 ## Objectives
 
