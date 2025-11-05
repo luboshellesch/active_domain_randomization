@@ -3,84 +3,68 @@ using UnityEngine;
 
 public class NicoAgentEvaluator : MonoBehaviour
 {
-    public enum LocalAxis { X, Y, Z }
-
     [Header("Evaluation Setup")]
     [Tooltip("Prefab containing the NICO robot with NicoAgentNew and a target cube")]
-    public GameObject nicoPrefab;
+    public GameObject NicoPrefab;
 
     [Tooltip("Number of tests (episodes) to run")]
-    public int numTests = 20;
+    public int NumTests = 20;
 
     [Tooltip("Maximum duration of a single episode (s)")]
-    public float maxEpisodeTime = 30f;
+    public float MaxEpisodeTime = 30f;
 
     [Tooltip("Success distance (in meters)")]
-    public float successDistance = 0.03f;
+    public float SuccessDistance = 0.03f;
 
     [Tooltip("Effector alignment with target direction (dot), 1=centered")]
-    public float successPointCenter = 0.9f;
+    public float SuccessPointCenter = 0.9f;
 
     [Tooltip("Run multiple agents in parallel (side by side)")]
-    public bool runParallel = false;
+    public bool RunParallel = false;
 
     [Tooltip("If enabled, stops the instance once success or failure is reached.")]
-    public bool stopOnSuccess = false;
+    public bool StopOnSuccess = false;
 
     [Header("Spawn Layout")]
     [Tooltip("If enabled, agents will spawn in a grid instead of a straight line.")]
-    public bool spawnInGrid = true;
+    public bool SpawnInGrid = true;
 
     [Tooltip("Spacing between agents (meters).")]
-    public float instanceSpacing = 2.0f;
+    public float InstanceSpacing = 2.0f;
 
-    [Tooltip("Number of agents per row (only used if spawnInGrid = true).")]
-    public int agentsPerRow = 5;
+    [Tooltip("Number of agents per row (only used if SpawnInGrid = true).")]
+    public int AgentsPerRow = 5;
 
-    [Header("Pointing Axis (must match agent's)")]
-    [Tooltip("Which effector local axis is considered 'forward'? Must match NicoAgentNew.")]
-    public LocalAxis pointingAxis = LocalAxis.Y;
+    private int _finishedCount = 0;
+    private int _successCount = 0;
+    private float _totalTime = 0f;
+    private float _totalDist = 0f;
 
-    private int finishedCount = 0;      // <— count episodes finished (success or fail)
-    private int successCount = 0;
-    private float totalTime = 0f;
-    private float totalDist = 0f;
+    private static Material _lineMaterial;
 
-    private static Material sLineMat;
-
-    private Vector3 AxisToLocal(LocalAxis axis)
+    private void Start()
     {
-        switch (axis)
-        {
-            case LocalAxis.X: return Vector3.right;
-            case LocalAxis.Y: return Vector3.up;
-            case LocalAxis.Z: return Vector3.forward;
-            default: return Vector3.up;
-        }
-    }
-
-    void Start()
-    {
-        if (!sLineMat) sLineMat = new Material(Shader.Find("Sprites/Default"));
+        if (_lineMaterial == null)
+            _lineMaterial = new Material(Shader.Find("Sprites/Default"));
         StartCoroutine(EvaluateAgents());
     }
 
-    IEnumerator EvaluateAgents()
+    private IEnumerator EvaluateAgents()
     {
-        if (nicoPrefab == null)
+        if (NicoPrefab == null)
         {
             Debug.LogError("[Evaluator] Nico prefab not assigned!");
             yield break;
         }
 
-        Debug.Log($"[Evaluator] Starting evaluation: {numTests} tests...");
+        Debug.Log($"[Evaluator] Starting evaluation: {NumTests} tests...");
 
-        if (runParallel)
+        if (RunParallel)
         {
-            for (int i = 0; i < numTests; i++)
+            for (int i = 0; i < NumTests; i++)
             {
                 Vector3 spawnPos = CalculateSpawnPosition(i);
-                GameObject instance = Instantiate(nicoPrefab, spawnPos, Quaternion.identity);
+                GameObject instance = Instantiate(NicoPrefab, spawnPos, Quaternion.identity);
                 instance.name = $"NicoEval_{i}";
                 StartCoroutine(RunSingleEpisode(instance, i + 1));
                 yield return new WaitForSeconds(0.01f);
@@ -88,10 +72,10 @@ public class NicoAgentEvaluator : MonoBehaviour
         }
         else
         {
-            for (int i = 0; i < numTests; i++)
+            for (int i = 0; i < NumTests; i++)
             {
                 Vector3 spawnPos = CalculateSpawnPosition(i);
-                GameObject instance = Instantiate(nicoPrefab, spawnPos, Quaternion.identity);
+                GameObject instance = Instantiate(NicoPrefab, spawnPos, Quaternion.identity);
                 instance.name = $"NicoEval_{i}";
 
                 yield return RunSingleEpisode(instance, i + 1);
@@ -104,7 +88,7 @@ public class NicoAgentEvaluator : MonoBehaviour
         }
     }
 
-    IEnumerator RunSingleEpisode(GameObject instance, int episodeIndex)
+    private IEnumerator RunSingleEpisode(GameObject instance, int episodeIndex)
     {
         NicoAgentNew agent = instance.GetComponentInChildren<NicoAgentNew>();
         if (agent == null)
@@ -113,58 +97,54 @@ public class NicoAgentEvaluator : MonoBehaviour
             yield break;
         }
 
-        // Keep agent and evaluator using the same axis
-        agent.pointingAxis = (NicoAgentNew.LocalAxis)pointingAxis;
-
-        GameObject effector = agent.effector;
+        GameObject effector = agent.Effector;
         agent.OnEpisodeBegin();
 
-        float start = Time.time;
+        float startTime = Time.time;
         float minDist = float.MaxValue;
         float maxAlignment = 0f;
         bool success = false;
 
-        // Debug line
         LineRenderer arrowLine = effector.AddComponent<LineRenderer>();
         arrowLine.useWorldSpace = true;
         arrowLine.startWidth = 0.002f;
         arrowLine.endWidth = 0.002f;
-        arrowLine.material = sLineMat;
+        arrowLine.material = _lineMaterial;
         arrowLine.startColor = Color.blue;
         arrowLine.endColor = Color.cyan;
         arrowLine.positionCount = 2;
 
         Transform fingerTip = effector.transform;
-        Transform target = agent.target.transform;
+        Transform target = agent.Target.transform;
 
-        Vector3 localAxis = AxisToLocal(pointingAxis);
-
-        while (Time.time - start < maxEpisodeTime)
+        while (Time.time - startTime < MaxEpisodeTime)
         {
             float dist = Vector3.Distance(fingerTip.position, target.position);
             minDist = Mathf.Min(minDist, dist);
 
-            // Use the same axis definition for alignment as visualization
-            Vector3 effectorForward = fingerTip.TransformDirection(localAxis).normalized;
-            Vector3 toTarget = (target.position - fingerTip.position).normalized;
-
-            float facingAlignment = Vector3.Dot(effectorForward, toTarget);
+            float facingAlignment = EffectorDirectionCalculator.GetAlignmentScore(
+                fingerTip,
+                target.position
+            );
             maxAlignment = Mathf.Max(maxAlignment, facingAlignment);
 
-            // Debug line
             Vector3 startPoint = fingerTip.position;
-            float lineLength = 1f;
-            Vector3 endPoint = startPoint + effectorForward * lineLength;
+            Vector3 direction = EffectorDirectionCalculator.GetPointingDirection(fingerTip);
+            Vector3 endPoint = startPoint + direction * 1f;
             arrowLine.SetPosition(0, startPoint);
             arrowLine.SetPosition(1, endPoint);
 
-            Debug.DrawLine(fingerTip.position, target.position, Color.green);
+            // Debug visualization using consistent direction calculation
+            Debug.DrawRay(
+                fingerTip.position,
+                EffectorDirectionCalculator.GetDirectionToTarget(fingerTip, target.position),
+                Color.green
+            );
 
-            if (dist <= successDistance && facingAlignment >= successPointCenter)
+            if (dist <= SuccessDistance && facingAlignment >= SuccessPointCenter)
             {
                 success = true;
-
-                if (stopOnSuccess)
+                if (StopOnSuccess)
                 {
                     StopMLAgent(instance);
                     break;
@@ -173,33 +153,33 @@ public class NicoAgentEvaluator : MonoBehaviour
             yield return null;
         }
 
-        float elapsed = Time.time - start;
-        totalDist += minDist;
+        float elapsed = Time.time - startTime;
+        _totalDist += minDist;
         if (success)
         {
-            successCount++;
-            totalTime += elapsed;
+            _successCount++;
+            _totalTime += elapsed;
         }
 
-        finishedCount++;  
+        _finishedCount++;
 
-        Debug.Log($"[Evaluator] Episode {episodeIndex}/{numTests}: {(success ? "SUCCESS" : "FAIL")} | minDist={minDist} | maxAlignment={maxAlignment} | time={elapsed:F2}s");
+        Debug.Log($"[Evaluator] Episode {episodeIndex}/{NumTests}: {(success ? "SUCCESS" : "FAIL")} | minDist={minDist} | maxAlignment={maxAlignment} | time={elapsed:F2}s");
 
-        if (stopOnSuccess) StopMLAgent(instance);
+        if (StopOnSuccess) StopMLAgent(instance);
 
-        if (runParallel && finishedCount >= numTests)
+        if (RunParallel && _finishedCount >= NumTests)
             PrintResults();
     }
 
-    void PrintResults()
+    private void PrintResults()
     {
-        float successRate = (float)successCount / numTests;
-        float avgTime = successCount > 0 ? totalTime / successCount : maxEpisodeTime;
-        float avgDist = totalDist / numTests;
+        float successRate = (float)_successCount / NumTests;
+        float avgTime = _successCount > 0 ? _totalTime / _successCount : MaxEpisodeTime;
+        float avgDist = _totalDist / NumTests;
 
         Debug.Log(
             $"========== [NICO EVALUATION FINISHED] ==========\n" +
-            $"Tests: {numTests}\n" +
+            $"Tests: {NumTests}\n" +
             $"Success rate: {successRate * 100f:F1}%\n" +
             $"Avg time to success: {avgTime:F2}s\n" +
             $"Avg min distance: {avgDist:F3} m\n" +
@@ -207,7 +187,7 @@ public class NicoAgentEvaluator : MonoBehaviour
         );
     }
 
-    void StopMLAgent(GameObject instance)
+    private void StopMLAgent(GameObject instance)
     {
         var agentComponent = instance.GetComponentInChildren<NicoAgentNew>();
         if (agentComponent != null) agentComponent.enabled = false;
@@ -215,17 +195,17 @@ public class NicoAgentEvaluator : MonoBehaviour
 
     private Vector3 CalculateSpawnPosition(int index)
     {
-        if (spawnInGrid)
+        if (SpawnInGrid)
         {
-            int row = index / agentsPerRow;
-            int col = index % agentsPerRow;
-            float x = col * instanceSpacing;
-            float z = row * instanceSpacing;
+            int row = index / AgentsPerRow;
+            int col = index % AgentsPerRow;
+            float x = col * InstanceSpacing;
+            float z = row * InstanceSpacing;
             return new Vector3(x, 0, z);
         }
         else
         {
-            float x = index * instanceSpacing;
+            float x = index * InstanceSpacing;
             return new Vector3(x, 0, 0);
         }
     }
