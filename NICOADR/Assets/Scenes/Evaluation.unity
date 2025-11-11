@@ -173,7 +173,7 @@ MonoBehaviour:
   SuccessDistance: 0.1
   SuccessPointCenter: 0.9
   RunParallel: 0
-  StopOnSuccess: 0
+  StopOnSuccess: 1
   SpawnInGrid: 1
   InstanceSpacing: 2
   AgentsPerRow: 5
