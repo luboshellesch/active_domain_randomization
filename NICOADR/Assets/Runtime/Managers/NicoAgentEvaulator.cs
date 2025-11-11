@@ -41,7 +41,6 @@ public class NicoAgentEvaluator : MonoBehaviour
     private float _totalDist = 0f;
 
     private static Material _lineMaterial;
-
     private void Start()
     {
         if (_lineMaterial == null)
@@ -119,17 +118,17 @@ public class NicoAgentEvaluator : MonoBehaviour
 
         while (Time.time - startTime < MaxEpisodeTime)
         {
-            float dist = Vector3.Distance(fingerTip.position, target.position);
+            float dist = EffectorTargeting.GetDistanceToTarget(fingerTip.position, target.position);
             minDist = Mathf.Min(minDist, dist);
 
-            float facingAlignment = EffectorDirectionCalculator.GetAlignmentScore(
+            float facingAlignment = EffectorTargeting.GetAlignmentScore(
                 fingerTip,
                 target.position
             );
             maxAlignment = Mathf.Max(maxAlignment, facingAlignment);
 
             Vector3 startPoint = fingerTip.position;
-            Vector3 direction = EffectorDirectionCalculator.GetPointingDirection(fingerTip);
+            Vector3 direction = EffectorTargeting.GetPointingDirection(fingerTip);
             Vector3 endPoint = startPoint + direction * 1f;
             arrowLine.SetPosition(0, startPoint);
             arrowLine.SetPosition(1, endPoint);
@@ -137,7 +136,7 @@ public class NicoAgentEvaluator : MonoBehaviour
             // Debug visualization using consistent direction calculation
             Debug.DrawRay(
                 fingerTip.position,
-                EffectorDirectionCalculator.GetDirectionToTarget(fingerTip, target.position),
+                EffectorTargeting.GetDirectionToTarget(fingerTip, target.position),
                 Color.green
             );
 

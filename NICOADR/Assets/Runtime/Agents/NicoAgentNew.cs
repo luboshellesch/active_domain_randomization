@@ -31,9 +31,30 @@ public class NicoAgentNew : Agent
     private int _dofs;
     private float _lastDistanceToTarget;
 
-    // Reward weights
-    private const float TimeWeight = 0.001f;
-    private const float OffTargetWeight = 3f;
+    // Reward weights new 
+    float progressWeight = 5.0f;        //agent 5 = 1f agent 6 = 5f
+    float alignProgressWeight = 0.2f;  
+    float actionPenaltyWeight = 0.02f; 
+    float timePenaltyPerStep = 0.001f;  
+    float nearDistance = 0.15f;
+
+    private float _lastAngleToTarget;
+
+    // good end of epizode
+    // --------------------------------------------------------------- //
+    float successDistance = 0.03f;
+    float successAngleDeg = 5f;
+    int successHoldSteps = 8;
+
+    int stepLimit = 1500;
+    int stagnationPatience = 150;
+    float minImprovement = 1e-4f;
+
+    float maxDistanceFail = 1.5f;
+
+    int _successHoldCounter;
+    int _noImproveCounter;
+    float _bestDistance;
 
     private void GetLimits(ArticulationBody root, List<float> lowerLimits, List<float> upperLimits)
     {
@@ -57,7 +78,6 @@ public class NicoAgentNew : Agent
     private Vector3 _spawnAreaMin = new(-0.3f, -0.1f, -0.2f);
     private Vector3 _spawnAreaMax = new(0.3f, 0.5f, -1f);
     private GameObject _debugSpawnArea;
-
     private void CreateDebugSpawnArea()
     {
         if (_debugSpawnArea != null) return;
@@ -91,10 +111,15 @@ public class NicoAgentNew : Agent
         _changes = new List<float>(_initialChanges);
         _targets = new List<float>(_initialTargets);
 
-        _lastDistanceToTarget = Vector3.Distance(Target.transform.position, Effector.transform.position);
-
         // CreateDebugSpawnArea();
         UpdateDebugSpawnArea();
+
+        // Reward weights new
+        _lastDistanceToTarget = EffectorTargeting.GetDistanceToTarget(
+        Effector.transform.position, Target.transform.position);
+
+        _lastAngleToTarget = EffectorTargeting.GetAngleToTarget(
+            Effector.transform, Target.transform.position);
     }
 
     private void UpdateDebugSpawnArea()
@@ -119,8 +144,6 @@ public class NicoAgentNew : Agent
         Target.transform.position = _nico.transform.position + randomOffset;
         Target.transform.localRotation = Quaternion.identity;
 
-        UpdateDebugSpawnArea();
-
         _nico.SetDriveTargets(_initialTargets);
         _nico.SetJointPositions(_initialPositions);
         _nico.SetJointVelocities(_initialVelocities);
@@ -128,9 +151,18 @@ public class NicoAgentNew : Agent
         _changes = new List<float>(_initialChanges);
         _targets = new List<float>(_initialTargets);
 
-        _lastDistanceToTarget = Vector3.Distance(Target.transform.position, Effector.transform.position);
-    }
+        // good end of epizode
+        _successHoldCounter = 0;
+        _noImproveCounter = 0;
+        _bestDistance = float.PositiveInfinity;
 
+        // Reward weights new
+        _lastDistanceToTarget = EffectorTargeting.GetDistanceToTarget(
+        Effector.transform.position, Target.transform.position);
+
+        _lastAngleToTarget = EffectorTargeting.GetAngleToTarget(
+            Effector.transform, Target.transform.position);
+    }
     private void OnDestroy()
     {
         if (_debugSpawnArea != null)
@@ -145,12 +177,11 @@ public class NicoAgentNew : Agent
         _nico.GetDriveTargets(observation);
         sensor.AddObservation(observation);
 
-        Vector3 toTarget = Target.transform.position - Effector.transform.position;
-        sensor.AddObservation(toTarget);
+        sensor.AddObservation(EffectorTargeting.GetDirectionToTarget(Effector.transform, Target.transform.position));
 
-        sensor.AddObservation(Effector.transform.localRotation);
+        sensor.AddObservation(EffectorTargeting.GetPointingDirection(Effector.transform));
         sensor.AddObservation(Effector.transform.position);
-        sensor.AddObservation(toTarget.magnitude);
+        sensor.AddObservation(EffectorTargeting.GetDistanceToTarget(Effector.transform.position, Target.transform.position));
     }
 
     public override void OnActionReceived(ActionBuffers actions)
@@ -176,52 +207,88 @@ public class NicoAgentNew : Agent
 
         _nico.SetDriveTargets(_targets);
 
-        float newDist = Vector3.Distance(Target.transform.position, Effector.transform.position);
+        float newDist = EffectorTargeting.GetDistanceToTarget(
+            Effector.transform.position, Target.transform.position);
 
-        float movementReward = 0f;
-        for (int i = 0; i < _dofs; ++i)
-            movementReward += -0.5f * Mathf.Abs(_changes[i]);
+        float pointingAngle = EffectorTargeting.GetAngleToTarget(
+            Effector.transform, Target.transform.position); // degrees
 
-        float gotCloser = (_lastDistanceToTarget - newDist) * 0.1f;
-        if (gotCloser <= 0f) gotCloser = -3f;
+        // 1) Distance progress (potential-based): + if we got closer, - if we moved away
+        float distDelta = _lastDistanceToTarget - newDist;
+        float rProgress = progressWeight * distDelta;
 
-        float proximity = -1f * newDist;
+        // 2) Orientation progress near the goal (only really matters when close)
+        float angleDeltaRad = (_lastAngleToTarget - pointingAngle) * Mathf.Deg2Rad; // + if angle improved
+        float near = Mathf.Clamp01((nearDistance - newDist) / nearDistance);        // 0 far ... 1 very close
+        float rAlign = alignProgressWeight * near * angleDeltaRad;
 
-        float offTargetPenalty = newDist > _lastDistanceToTarget
-            ? OffTargetWeight * (newDist - _lastDistanceToTarget)
-            : 0f;
+        // 3) Action cost 
+        float sumAbs = 0f;
+        for (int i = 0; i < _dofs; ++i) sumAbs += Mathf.Abs(_changes[i]);
+        float rAction = -actionPenaltyWeight * sumAbs;
 
-        //nico_new_agent_1, nico_new_agent_2 reward_v1
-        // ------------------------------------------------------------ //
+        // 4) Small time cost per step
+        float rTime = -timePenaltyPerStep;
 
-        float timePenalty = TimeWeight * Time.fixedDeltaTime;
-
-        float pointingAngle = EffectorDirectionCalculator.GetAngleToTarget(
-            Effector.transform,
-            Target.transform.position
-        );
-
-        float alignment = EffectorDirectionCalculator.GetAlignmentScore(
-            Effector.transform,
-            Target.transform.position
-        );
-
-        float pointingReward = pointingAngle < 5f ? -1f : 0f;
-        float insideReward = (newDist < 0.5f && pointingAngle < 5f) ? -2f : 0f;
-
-        _lastDistanceToTarget = newDist;
-
-        //nico_agent_new_3 reward_v2
-        // ------------------------------------------------------------ //
-        float totalReward =
-              gotCloser
-            + proximity
-            + movementReward
-            + pointingReward
-            + insideReward
-            - timePenalty
-            - offTargetPenalty;
-
+        // Total shaped reward this step
+        float totalReward = rProgress + rAlign + rAction + rTime;
         AddReward(totalReward);
+
+        // Update
+        _lastDistanceToTarget = newDist;
+        _lastAngleToTarget = pointingAngle;
+
+
+        //nico_agent_new_4 TODO correct epizode ending!
+        // ------------------------------------------------------------ //
+        // Track best distance & stagnation
+        if (newDist + 1e-9f < _bestDistance)
+        {
+            _bestDistance = newDist;
+            _noImproveCounter = 0;
+        }
+        else if (newDist > _bestDistance - minImprovement)
+        {
+            _noImproveCounter++;
+        }
+
+        bool inGoal = newDist <= successDistance && pointingAngle <= successAngleDeg;
+        if (inGoal)
+        {
+            _successHoldCounter++;
+            AddReward(+2f / successHoldSteps);
+        }
+        else
+        {
+            _successHoldCounter = 0;
+        }
+
+        // ---- Termination checks (ordered) ----
+        if (_successHoldCounter >= successHoldSteps)
+        {
+            SetReward(+5f);        
+            EndEpisode();
+            return;
+        }
+
+        if (StepCount >= stepLimit)
+        {
+            EndEpisode();
+            return;
+        }
+
+        if (_noImproveCounter >= stagnationPatience)
+        {
+            AddReward(-1f);       
+            EndEpisode();
+            return;
+        }
+
+        if (newDist > maxDistanceFail || float.IsNaN(newDist) || float.IsNaN(pointingAngle))
+        {
+            AddReward(-1f);
+            EndEpisode();
+            return;
+        }
     }
 }

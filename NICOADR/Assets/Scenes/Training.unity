@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.44488955, g: 0.49445516, b: 0.573614, a: 1}
+  m_IndirectSpecularColor: {r: 0.44490027, g: 0.49446815, b: 0.5736238, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -262,7 +262,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   NicoPrefab: {fileID: 910012547633452938, guid: 8a8f500342d85a947a4b2b1dcf82fd5d, type: 3}
-  NumInstances: 10
+  NumInstances: 40
   InstanceSpacing: 2
   SpawnInGrid: 1
   AgentsPerRow: 5

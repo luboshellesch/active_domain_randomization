@@ -40,7 +40,7 @@ public class EffectorPointer : MonoBehaviour
             return;
 
         Vector3 startPoint = EffectorTransform.position;
-        Vector3 direction = EffectorDirectionCalculator.GetPointingDirection(EffectorTransform);
+        Vector3 direction = EffectorTargeting.GetPointingDirection(EffectorTransform);
         Vector3 endPoint = startPoint + direction * PointerLength;
 
         _lineRenderer.SetPosition(0, startPoint);

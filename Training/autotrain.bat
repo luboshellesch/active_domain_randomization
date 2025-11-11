@@ -1,16 +1,13 @@
 @echo off
-REM === MAKE PATHS RELATIVE TO THIS FILE ===
-set "CONDA_ENV=C:\Users\Lubos\miniconda3\envs\mlagents"
-cd /d "%~dp0"
-
 REM === CONFIGURATION ===
+set "CONDA_ENV=C:\Users\Lubos\miniconda3\envs\mlagents"
 set "PYTHON_EXE=%USERPROFILE%\anaconda3\envs\%CONDA_ENV%\python.exe"
 set "MLAGENTS_LEARN=mlagents-learn"
-set "CONFIG_PATH=trainingConfig.yaml"
+set "CONFIG_PATH=C:\diplomovka\active_domain_randomization\Training\trainingConfig.yaml"
 REM === Leave ENV_PATH empty if running via Unity Editor ===
-set "ENV_PATH="
+set "ENV_PATH="  
 set "BEHAVIOR_NAME=nico_new_agent_"
-set "RESULTS_DIR=..\NICOADR\Assets\Runtime\ML\Models\experiments"
+set "RESULTS_DIR=C:\diplomovka\active_domain_randomization\Training\results"
 
 REM === AUTOINCREMENT RUN ID ===
 set "BASE_RUN_NAME=%BEHAVIOR_NAME%"
@@ -38,6 +35,9 @@ if "%ENV_PATH%"=="" (
 ) else (
     start "Training Window" cmd /k "conda activate %CONDA_ENV% && mlagents-learn %CONFIG_PATH% --run-id=%RUN_ID% --env=%ENV_PATH% --train"
 )
+
+
+timeout /t 2 /nobreak >nul
 
 REM === START TENSORBOARD IN NEW CMD ===
 start "TensorBoard Window" cmd /k "conda activate %CONDA_ENV% && tensorboard --logdir=%RESULTS_DIR%"
