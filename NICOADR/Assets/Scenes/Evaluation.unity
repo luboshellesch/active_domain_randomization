@@ -169,12 +169,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   NicoPrefab: {fileID: 910012547633452938, guid: 9e5b48c8105773241941abaafe619ffd, type: 3}
   NumTests: 20
-  MaxEpisodeTime: 60
-  SuccessDistance: 0.1
+  MaxEpisodeTime: 30
+  SuccessDistance: 0.5
   SuccessPointCenter: 0.9
-  RunParallel: 0
-  StopOnSuccess: 1
-  SpawnInGrid: 1
+  RunParallel: 1
+  StopOnSuccess: 0
   InstanceSpacing: 2
   AgentsPerRow: 5
 --- !u!1 &1380500238

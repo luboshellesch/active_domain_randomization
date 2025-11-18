@@ -12,8 +12,13 @@ public class NicoAgentNew : Agent
     [Tooltip("End effector")]
     public GameObject Effector;
 
+    [Tooltip("Evaulation mode switch")]
+    public bool evaluationMode;
+
     [Header("Debug Visualization")]
     [SerializeField] private Material _debugAreaMaterial;
+
+
     // --- Robot state ---
     private ArticulationBody _nico;
 
@@ -239,7 +244,7 @@ public class NicoAgentNew : Agent
         _lastAngleToTarget = pointingAngle;
 
 
-        //nico_agent_new_4 TODO correct epizode ending!
+        //nico_agent_new_4 TODO correct episode ending!
         // ------------------------------------------------------------ //
         // Track best distance & stagnation
         if (newDist + 1e-9f < _bestDistance)
@@ -264,31 +269,33 @@ public class NicoAgentNew : Agent
         }
 
         // ---- Termination checks (ordered) ----
-        if (_successHoldCounter >= successHoldSteps)
-        {
-            SetReward(+5f);        
-            EndEpisode();
-            return;
-        }
+        if (!evaluationMode) { 
+            if (_successHoldCounter >= successHoldSteps)
+            {
+                SetReward(+5f);
+                EndEpisode();
+                return;
+            }
 
-        if (StepCount >= stepLimit)
-        {
-            EndEpisode();
-            return;
-        }
+            if (StepCount >= stepLimit)
+            {
+                EndEpisode();
+                return;
+            }
 
-        if (_noImproveCounter >= stagnationPatience)
-        {
-            AddReward(-1f);       
-            EndEpisode();
-            return;
-        }
+            if (_noImproveCounter >= stagnationPatience)
+            {
+                AddReward(-1f);
+                EndEpisode();
+                return;
+            }
 
-        if (newDist > maxDistanceFail || float.IsNaN(newDist) || float.IsNaN(pointingAngle))
-        {
-            AddReward(-1f);
-            EndEpisode();
-            return;
+            if (newDist > maxDistanceFail || float.IsNaN(newDist) || float.IsNaN(pointingAngle))
+            {
+                AddReward(-1f);
+                EndEpisode();
+                return;
+            }
         }
     }
 }

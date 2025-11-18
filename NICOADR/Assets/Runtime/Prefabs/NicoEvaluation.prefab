@@ -5391,7 +5391,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 16
+    VectorObservationSize: 17
     NumStackedVectorObservations: 1
     m_ActionSpec:
       m_NumContinuousActions: 6
@@ -5400,7 +5400,7 @@ MonoBehaviour:
     VectorActionDescriptions: []
     VectorActionSpaceType: 1
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 5022602860645237092, guid: 019f98b3093ea22409a17ff5cc27753b, type: 3}
+  m_Model: {fileID: 5022602860645237092, guid: 5ffd7c93094dd3644a5f91a17dc4a673, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: NICO
@@ -5426,6 +5426,7 @@ MonoBehaviour:
   MaxStep: 0
   Target: {fileID: 7243740531354843355}
   Effector: {fileID: 2761505520636570019}
+  evaluationMode: 0
   _debugAreaMaterial: {fileID: 2100000, guid: 0da4fd47cd8aa4827b7e2490cf15868f, type: 2}
 --- !u!114 &1407623189087523643
 MonoBehaviour:

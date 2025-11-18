@@ -26,9 +26,6 @@ public class NicoAgentEvaluator : MonoBehaviour
     public bool StopOnSuccess = false;
 
     [Header("Spawn Layout")]
-    [Tooltip("If enabled, agents will spawn in a grid instead of a straight line.")]
-    public bool SpawnInGrid = true;
-
     [Tooltip("Spacing between agents (meters).")]
     public float InstanceSpacing = 2.0f;
 
@@ -41,20 +38,44 @@ public class NicoAgentEvaluator : MonoBehaviour
     private float _totalDist = 0f;
 
     private static Material _lineMaterial;
+
+    private NicoAgentNew _nicoPrefabAgent;
+
+    private void Awake()
+    {
+        if (NicoPrefab == null)
+        {
+            Debug.LogError("[Evaluator] Nico prefab not assigned!");
+            return;
+        }
+        _nicoPrefabAgent = NicoPrefab.GetComponentInChildren<NicoAgentNew>();
+        if (_nicoPrefabAgent == null)
+        {
+            Debug.LogError("[Evaluator] NicoAgentNew not found on NicoPrefab!");
+            return;
+        }
+
+        if (!_nicoPrefabAgent.evaluationMode)
+        {
+            _nicoPrefabAgent.evaluationMode = true;
+            Debug.Log("[Evaluator] Switched NicoAgentNew Evaulation Mode on!");
+        }
+        
+
+        _nicoPrefabAgent.MaxStep = 0;
+    }
     private void Start()
     {
         if (_lineMaterial == null)
             _lineMaterial = new Material(Shader.Find("Sprites/Default"));
+        if (_nicoPrefabAgent == null)
+            return;
         StartCoroutine(EvaluateAgents());
     }
 
     private IEnumerator EvaluateAgents()
     {
-        if (NicoPrefab == null)
-        {
-            Debug.LogError("[Evaluator] Nico prefab not assigned!");
-            yield break;
-        }
+        
 
         Debug.Log($"[Evaluator] Starting evaluation: {NumTests} tests...");
 
@@ -163,8 +184,7 @@ public class NicoAgentEvaluator : MonoBehaviour
         _finishedCount++;
 
         Debug.Log($"[Evaluator] Episode {episodeIndex}/{NumTests}: {(success ? "SUCCESS" : "FAIL")} | minDist={minDist} | maxAlignment={maxAlignment} | time={elapsed:F2}s");
-
-        if (StopOnSuccess) StopMLAgent(instance);
+        Debug.Log($"Episode {episodeIndex} finished with StepCount={agent.StepCount} and CompletedEpisodes={agent.CompletedEpisodes}");
 
         if (RunParallel && _finishedCount >= NumTests)
             PrintResults();
@@ -194,7 +214,7 @@ public class NicoAgentEvaluator : MonoBehaviour
 
     private Vector3 CalculateSpawnPosition(int index)
     {
-        if (SpawnInGrid)
+        if (RunParallel)
         {
             int row = index / AgentsPerRow;
             int col = index % AgentsPerRow;
@@ -202,10 +222,6 @@ public class NicoAgentEvaluator : MonoBehaviour
             float z = row * InstanceSpacing;
             return new Vector3(x, 0, z);
         }
-        else
-        {
-            float x = index * InstanceSpacing;
-            return new Vector3(x, 0, 0);
-        }
+        return new Vector3(0, 0, 0);
     }
 }
