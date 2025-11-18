@@ -1,4 +1,4 @@
 # git ignore for mac os
 .DS_Store
-/Packages/manifest.json
-/Packages/packages-lock.json
+**/manifest.json
+**/packages-lock.json
