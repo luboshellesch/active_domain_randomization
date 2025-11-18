@@ -6,7 +6,7 @@ set "MLAGENTS_LEARN=mlagents-learn"
 set "CONFIG_PATH=C:\diplomovka\active_domain_randomization\Training\trainingConfig.yaml"
 REM === Leave ENV_PATH empty if running via Unity Editor ===
 set "ENV_PATH="  
-set "BEHAVIOR_NAME=nico_new_agent_"
+set "BEHAVIOR_NAME=agent"
 set "RESULTS_DIR=C:\diplomovka\active_domain_randomization\Training\results"
 
 REM === AUTOINCREMENT RUN ID ===
@@ -14,12 +14,15 @@ set "BASE_RUN_NAME=%BEHAVIOR_NAME%"
 set /A COUNTER=1
 
 :CHECK_FOLDER
-if exist "%RESULTS_DIR%\%BASE_RUN_NAME%%COUNTER%" (
+set "PADDED=00%COUNTER%"
+set "RUN_NAME=%BASE_RUN_NAME%%PADDED:~-3%"
+
+if exist "%RESULTS_DIR%\%RUN_NAME%" (
     set /A COUNTER+=1
     goto CHECK_FOLDER
 )
 
-set "RUN_ID=%RESULTS_DIR%\%BASE_RUN_NAME%%COUNTER%"
+set "RUN_ID=%RUN_NAME%"
 
 REM === ECHO WHAT WILL RUN ===
 echo --------------------------------------

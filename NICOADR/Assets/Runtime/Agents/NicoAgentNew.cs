@@ -37,11 +37,11 @@ public class NicoAgentNew : Agent
     private float _lastDistanceToTarget;
 
     // Reward weights new 
-    float progressWeight = 5.0f;        //agent 5 = 1f agent 6 = 5f
+    float progressWeight = 2.5f;        //agent 5 = 1f agent 6 - 9 = 5f agent 10 = 2.5f
     float alignProgressWeight = 0.2f;  
     float actionPenaltyWeight = 0.02f; 
-    float timePenaltyPerStep = 0.001f;  
-    float nearDistance = 0.15f;
+    float timePenaltyPerStep = 0.001f;      //agent 5 - 10 = 0.001f agent 
+    float nearDistance = 0.15f;            //agent 5 - 10 = 0.001f agent 
 
     private float _lastAngleToTarget;
 
@@ -80,8 +80,8 @@ public class NicoAgentNew : Agent
     }
 
     [Header("Target Spawn Settings")]
-    private Vector3 _spawnAreaMin = new(-0.3f, -0.1f, -0.2f);
-    private Vector3 _spawnAreaMax = new(0.3f, 0.5f, -1f);
+    private Vector3 _spawnAreaMin = new(-0.3f, -0.1f, -0.6f);
+    private Vector3 _spawnAreaMax = new(0.3f, 0.5f, -1.6f);
     private GameObject _debugSpawnArea;
     private void CreateDebugSpawnArea()
     {
@@ -116,7 +116,7 @@ public class NicoAgentNew : Agent
         _changes = new List<float>(_initialChanges);
         _targets = new List<float>(_initialTargets);
 
-        // CreateDebugSpawnArea();
+        CreateDebugSpawnArea();
         UpdateDebugSpawnArea();
 
         // Reward weights new
