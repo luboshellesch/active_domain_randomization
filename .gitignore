@@ -1,4 +1,4 @@
 # git ignore for mac os
 .DS_Store
-*/manifest.json
-*/packages-lock.json
+NICOADR/Packages/manifest.json
+NICOADR/Packages/packages-lock.json
