@@ -102,6 +102,7 @@ InitTestScene*.unity*
 .DS_Store
 Thumbs.db
 Desktop.ini
+/[Pp]ackages/
 
 # IDE settings
 .vscode/
