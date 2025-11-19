@@ -37,7 +37,7 @@ public class NicoAgentNew : Agent
     private float _lastDistanceToTarget;
 
     // Reward weights new 
-    float progressWeight = 2.5f;        //agent 5 = 1f agent 6 - 9 = 5f agent 10 = 2.5f
+    float progressWeight = 5f;        //agent 5 = 1f agent 6 - 9 = 5f agent 10 = 2.5f
     float alignProgressWeight = 0.2f;  
     float actionPenaltyWeight = 0.02f; 
     float timePenaltyPerStep = 0.001f;      //agent 5 - 10 = 0.001f agent 

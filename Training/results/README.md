@@ -73,6 +73,26 @@ The target can only spawn at positions beyond NICO’s reachable range.
 
 Nico can point in generall direction of Target. However, still not precise enough, floating aroumd target not staying on it.
 
-#### 7. `agent_010`
+#### 8. `agent_010`
+Reward function 0.3.2 (designed to keep the cumulative reward positive, with a larger progress weight). Episodes terminated correctly. Training stopped after 3,000,000 steps.
+Observation vector size: 16.
+
+`progress_weight = 2.5f`
+
+The target can only spawn at positions beyond NICO’s reachable range. 
+
+Nico can point in generall direction of Target. However, still not precise enough, floating aroumd target not staying on it.
+
+#### 8. `agent_011`
+Reward function 0.3.2 (designed to keep the cumulative reward positive, with a larger progress weight). Episodes terminated correctly. Training stopped after 3,000,000 steps.
+Observation vector size: 16.
+
+`progress_weight = 5f`
+`learning_rate_schedule = constant`
+`learning_rate = 0.0003`
+
+The target can only spawn at positions beyond NICO’s reachable range. 
+
+
 
 ### Trainer type: SAC

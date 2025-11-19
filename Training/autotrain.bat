@@ -22,7 +22,7 @@ if exist "%RESULTS_DIR%\%RUN_NAME%" (
     goto CHECK_FOLDER
 )
 
-set "RUN_ID=%RUN_NAME%"
+set "RUN_ID=%RESULTS_DIR%\%RUN_NAME%"
 
 REM === ECHO WHAT WILL RUN ===
 echo --------------------------------------
