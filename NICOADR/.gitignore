@@ -108,3 +108,6 @@ Desktop.ini
 .vsconfig
 
 *.slnx
+
+# Ml-agents generated files
+/ML-Agents/Timers/*
