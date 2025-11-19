@@ -33,10 +33,6 @@ public class NicoAgentNew : Agent
     private int _dofs;
 
     // --- Reward ---
-    private float _angleThreshold = 3f;   
-    private float _distThreshold = 0.02f;
-    private int _alignedSteps = 0;
-    private int _stepsToSuccess = 10;
 
 
     private void GetLimits(ArticulationBody root, List<float> lowerLimits, List<float> upperLimits)
@@ -170,8 +166,6 @@ public class NicoAgentNew : Agent
         _nico.SetDriveTargets(_targets);
 
         // --- Reward --- 
-        float angleError = effectorDirectionCalculator.GetAngleErrorDegrees();
-        float distError = effectorDirectionCalculator.GetDistanceToTarget();
 
     }
 
