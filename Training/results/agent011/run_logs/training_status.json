@@ -1,0 +1,65 @@
+{
+    "NICO": {
+        "checkpoints": [
+            {
+                "steps": 1499934,
+                "file_path": "C:\\diplomovka\\active_domain_randomization\\Training\\results\\agent011\\NICO\\NICO-1499934.onnx",
+                "reward": 0.45792661439504057,
+                "creation_time": 1763505369.4619381,
+                "auxillary_file_paths": [
+                    "C:\\diplomovka\\active_domain_randomization\\Training\\results\\agent011\\NICO\\NICO-1499934.pt"
+                ]
+            },
+            {
+                "steps": 1999889,
+                "file_path": "C:\\diplomovka\\active_domain_randomization\\Training\\results\\agent011\\NICO\\NICO-1999889.onnx",
+                "reward": 0.16805441050693906,
+                "creation_time": 1763506234.168036,
+                "auxillary_file_paths": [
+                    "C:\\diplomovka\\active_domain_randomization\\Training\\results\\agent011\\NICO\\NICO-1999889.pt"
+                ]
+            },
+            {
+                "steps": 2499974,
+                "file_path": "C:\\diplomovka\\active_domain_randomization\\Training\\results\\agent011\\NICO\\NICO-2499974.onnx",
+                "reward": 0.29319960753122964,
+                "creation_time": 1763507100.7580125,
+                "auxillary_file_paths": [
+                    "C:\\diplomovka\\active_domain_randomization\\Training\\results\\agent011\\NICO\\NICO-2499974.pt"
+                ]
+            },
+            {
+                "steps": 2999859,
+                "file_path": "C:\\diplomovka\\active_domain_randomization\\Training\\results\\agent011\\NICO\\NICO-2999859.onnx",
+                "reward": 0.24224893165671307,
+                "creation_time": 1763507960.4099247,
+                "auxillary_file_paths": [
+                    "C:\\diplomovka\\active_domain_randomization\\Training\\results\\agent011\\NICO\\NICO-2999859.pt"
+                ]
+            },
+            {
+                "steps": 3000168,
+                "file_path": "C:\\diplomovka\\active_domain_randomization\\Training\\results\\agent011\\NICO\\NICO-3000168.onnx",
+                "reward": 0.24948992403291112,
+                "creation_time": 1763507960.4830012,
+                "auxillary_file_paths": [
+                    "C:\\diplomovka\\active_domain_randomization\\Training\\results\\agent011\\NICO\\NICO-3000168.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 3000168,
+            "file_path": "C:\\diplomovka\\active_domain_randomization\\Training\\results\\agent011\\NICO.onnx",
+            "reward": 0.24948992403291112,
+            "creation_time": 1763507960.4830012,
+            "auxillary_file_paths": [
+                "C:\\diplomovka\\active_domain_randomization\\Training\\results\\agent011\\NICO\\NICO-3000168.pt"
+            ]
+        }
+    },
+    "metadata": {
+        "stats_format_version": "0.3.0",
+        "mlagents_version": "1.1.0",
+        "torch_version": "2.2.2+cu121"
+    }
+}

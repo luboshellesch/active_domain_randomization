@@ -1,0 +1,42 @@
+{
+    "name": "root",
+    "metadata": {
+        "timer_format_version": "0.1.0",
+        "start_time_seconds": "1762883580",
+        "python_version": "3.10.12 | packaged by Anaconda, Inc. | (main, Jul  5 2023, 19:01:18) [MSC v.1916 64 bit (AMD64)]",
+        "command_line_arguments": "C:\\Users\\Lubos\\miniconda3\\envs\\mlagents\\Scripts\\mlagents-learn trainingConfig.yaml --run-id=nico_new_agent_1 --train --force",
+        "mlagents_version": "1.1.0",
+        "mlagents_envs_version": "1.1.0",
+        "communication_protocol_version": "1.5.0",
+        "pytorch_version": "2.2.2+cu121",
+        "numpy_version": "1.23.5",
+        "end_time_seconds": "1762883643"
+    },
+    "total": 62.982309699989855,
+    "count": 1,
+    "self": 0.00892069999827072,
+    "children": {
+        "run_training.setup": {
+            "total": 0.11548219999531284,
+            "count": 1,
+            "self": 0.11548219999531284
+        },
+        "TrainerController.start_learning": {
+            "total": 62.85790679999627,
+            "count": 1,
+            "self": 0.00011250004172325134,
+            "children": {
+                "TrainerController._reset_env": {
+                    "total": 62.857774499978404,
+                    "count": 1,
+                    "self": 62.857774499978404
+                },
+                "TrainerController._save_models": {
+                    "total": 1.9799976143985987e-05,
+                    "count": 1,
+                    "self": 1.9799976143985987e-05
+                }
+            }
+        }
+    }
+}
