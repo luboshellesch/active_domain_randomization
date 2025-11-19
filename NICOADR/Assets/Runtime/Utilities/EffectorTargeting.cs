@@ -11,22 +11,22 @@ public static class EffectorTargeting
         return effectorTransform.TransformDirection(localAxis).normalized;
     }
 
-    public static Vector3 GetDirectionToTarget(Transform effectorTransform, Vector3 targetPosition)
+    public static Vector3 GetDirectionToTarget(Vector3 effectorTransform, Vector3 targetPosition)
     {
-        return (targetPosition - effectorTransform.position).normalized;
+        return (targetPosition - effectorTransform).normalized;
     }
 
     public static float GetAlignmentScore(Transform effectorTransform, Vector3 targetPosition)
     {
         Vector3 pointingDir = GetPointingDirection(effectorTransform);
-        Vector3 toTargetDir = GetDirectionToTarget(effectorTransform, targetPosition);
+        Vector3 toTargetDir = GetDirectionToTarget(effectorTransform.position, targetPosition);
         return Vector3.Dot(pointingDir, toTargetDir);
     }
 
     public static float GetAngleToTarget(Transform effectorTransform, Vector3 targetPosition)
     {
         Vector3 pointingDir = GetPointingDirection(effectorTransform);
-        Vector3 toTargetDir = GetDirectionToTarget(effectorTransform, targetPosition);
+        Vector3 toTargetDir = GetDirectionToTarget(effectorTransform.position, targetPosition);
         return Vector3.Angle(pointingDir, toTargetDir);
     }
 

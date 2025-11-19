@@ -181,9 +181,7 @@ public class NicoAgentNew : Agent
         var observation = new List<float>();
         _nico.GetDriveTargets(observation);
         sensor.AddObservation(observation);
-
-        sensor.AddObservation(EffectorTargeting.GetDirectionToTarget(Effector.transform, Target.transform.position));
-
+        sensor.AddObservation(EffectorTargeting.GetDirectionToTarget(Effector.transform.position, Target.transform.position));
         sensor.AddObservation(EffectorTargeting.GetPointingDirection(Effector.transform));
         sensor.AddObservation(Effector.transform.position);
         sensor.AddObservation(EffectorTargeting.GetDistanceToTarget(Effector.transform.position, Target.transform.position));
