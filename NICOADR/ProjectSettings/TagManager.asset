@@ -2,14 +2,20 @@
 %TAG !u! tag:unity3d.com,2011:
 --- !u!78 &1
 TagManager:
-  serializedVersion: 2
+  serializedVersion: 3
   tags:
-  - ThumbBase
-  - ThumbContinuation
-  - IndexBase
-  - IndexContinuation
-  - FingerBase
-  - FingerContinuation
+  - ThumbBaseR
+  - ThumbBaseL
+  - ThumbContinuationR
+  - ThumbContinuationL
+  - IndexBaseR
+  - IndexBaseL
+  - IndexContinuationR
+  - IndexContinuationL
+  - FingerBaseR
+  - FingerBaseL
+  - FingerContinuationR
+  - FingerContinuationL
   layers:
   - Default
   - TransparentFX
@@ -17,22 +23,22 @@ TagManager:
   - 
   - Water
   - UI
-  - 
+  - 6
   - 7
   - 8
-  - 
+  - 9
   - 10
   - 11
   - 12
   - 13
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
+  - 14
+  - 15
+  - 16
+  - 17
+  - 18
+  - 19
+  - 20
+  - head
   - 
   - 
   - 
@@ -47,3 +53,5 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  m_RenderingLayers:
+  - Default
