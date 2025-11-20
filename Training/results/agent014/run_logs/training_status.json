@@ -1,0 +1,47 @@
+{
+    "NICO": {
+        "checkpoints": [
+            {
+                "steps": 499750,
+                "file_path": "C:\\diplomovka\\active_domain_randomization\\Training\\results\\agent014\\NICO\\NICO-499750.onnx",
+                "reward": 397.96250780322885,
+                "creation_time": 1763667552.099012,
+                "auxillary_file_paths": [
+                    "C:\\diplomovka\\active_domain_randomization\\Training\\results\\agent014\\NICO\\NICO-499750.pt"
+                ]
+            },
+            {
+                "steps": 999750,
+                "file_path": "C:\\diplomovka\\active_domain_randomization\\Training\\results\\agent014\\NICO\\NICO-999750.onnx",
+                "reward": 419.04903445453766,
+                "creation_time": 1763668355.598154,
+                "auxillary_file_paths": [
+                    "C:\\diplomovka\\active_domain_randomization\\Training\\results\\agent014\\NICO\\NICO-999750.pt"
+                ]
+            },
+            {
+                "steps": 1010000,
+                "file_path": "C:\\diplomovka\\active_domain_randomization\\Training\\results\\agent014\\NICO\\NICO-1010000.onnx",
+                "reward": 418.65416229248046,
+                "creation_time": 1763668360.1899648,
+                "auxillary_file_paths": [
+                    "C:\\diplomovka\\active_domain_randomization\\Training\\results\\agent014\\NICO\\NICO-1010000.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 1010000,
+            "file_path": "C:\\diplomovka\\active_domain_randomization\\Training\\results\\agent014\\NICO.onnx",
+            "reward": 418.65416229248046,
+            "creation_time": 1763668360.1899648,
+            "auxillary_file_paths": [
+                "C:\\diplomovka\\active_domain_randomization\\Training\\results\\agent014\\NICO\\NICO-1010000.pt"
+            ]
+        }
+    },
+    "metadata": {
+        "stats_format_version": "0.3.0",
+        "mlagents_version": "1.1.0",
+        "torch_version": "2.2.2+cu121"
+    }
+}

@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Sensors;
+using UnityEditor;
 using UnityEngine;
 
 public class NicoAgentNew : Agent
@@ -31,10 +33,6 @@ public class NicoAgentNew : Agent
     private List<float> _lowLimits;
     private List<float> _highLimits;
     private int _dofs;
-
-    // --- Reward ---
-
-
     private void GetLimits(ArticulationBody root, List<float> lowerLimits, List<float> upperLimits)
     {
         var currentObj = root.gameObject;
@@ -104,6 +102,8 @@ public class NicoAgentNew : Agent
         Vector3 size = _spawnAreaMax - _spawnAreaMin;
         _debugSpawnArea.transform.localScale = size;
     }
+    private float _alignedSteps;
+    private float _maxDistError = 2f;
 
     public override void OnEpisodeBegin()
     {
@@ -122,6 +122,8 @@ public class NicoAgentNew : Agent
 
         _changes = new List<float>(_initialChanges);
         _targets = new List<float>(_initialTargets);
+
+        _alignedSteps = 0;
     }
     private void OnDestroy()
     {
@@ -138,9 +140,16 @@ public class NicoAgentNew : Agent
         sensor.AddObservation(observation);
         sensor.AddObservation(EffectorTargeting.GetDirectionToTarget(Effector.transform, Target.transform.position));
         sensor.AddObservation(EffectorTargeting.GetPointingDirection(Effector.transform));
-        sensor.AddObservation(Effector.transform.position);
+        //sensor.AddObservation(Effector.transform.position);
         sensor.AddObservation(EffectorTargeting.GetDistanceToTarget(Effector.transform.position, Target.transform.position));
     }
+    private float _alignmentScale = 0.5f;
+    private float _successThreshold = 0.99f;  // TODO toto som zmenil naposledy 97 -> 99
+    private float _successBonus = 1f;
+    private float _timePenalty = 0.0001f;
+    private int _successSteps = 50;
+    private int _maxSteps = 1000;
+
 
     public override void OnActionReceived(ActionBuffers actions)
     {
@@ -166,7 +175,55 @@ public class NicoAgentNew : Agent
         _nico.SetDriveTargets(_targets);
 
         // --- Reward --- 
+        float reward = 0f;
+        float alignment = EffectorTargeting.GetAlignmentScore(Effector.transform, Target.transform.position);
+        reward += _angleWeight * alignment;
 
+        float distance = EffectorTargeting.GetDistanceToTarget(Effector.transform.position, Target.transform.position);
+        float normDist = Mathf.Clamp(distance / _maxDistError, -1.0f, 1.0f);
+        reward -= (1f - _angleWeight) * normDist;
+
+        //AddReward(_timePenalty);
+        reward -= _timePenalty;
+        AddReward(reward);
+
+        if (!evaluationMode)
+        {
+            //---Success condition-- -
+            if (alignment > _successThreshold)
+            {
+                _alignedSteps++;
+                reward += _timePenalty;     // TODO toto som pridal naposledy
+                //AddReward(Mathf.Clamp(_alignedSteps / _maxSteps, 0f, 1f));
+                float alignedStepsReward = Mathf.Clamp((float)_alignedSteps / (float)_maxSteps, 0f, 1f);
+                reward += alignedStepsReward;
+
+            }
+            else
+            {
+                _alignedSteps = 0;
+            }
+            SetReward(Mathf.Clamp(reward, 0f, 1f));
+            if (_alignedSteps >= _successSteps)
+            {
+                AddReward(_successBonus);
+            }
+            if (StepCount >= _maxSteps)
+            {
+                EndEpisode();
+            }
+        }
+    }
+    private float _angleWeight = 0.7f;
+
+    private float ComputeAlignment()
+    {
+        float angle = EffectorTargeting.GetAlignmentScore(Effector.transform, Target.transform.position);
+        float distError = EffectorTargeting.GetDistanceToTarget(Effector.transform.position, Target.transform.position);
+        float normDist = Mathf.Clamp(distError / _maxDistError, 0.0f, 1.0f);
+        float combinedError = _angleWeight * angle + (1f - _angleWeight) * normDist;
+        float alignment = 1f - combinedError;
+        return alignment;
     }
 
 }
